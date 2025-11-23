@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Stats from './components/Stats';
@@ -9,7 +10,13 @@ import Testimonials from './components/Testimonials';
 import FAQ from './components/FAQ';
 import Footer from './components/Footer';
 import StickyCTA from './components/StickyCTA';
-import LegalPages from './components/LegalPages';
+
+// Legal Pages Imports (Correct File Names)
+import PrivacyPolicy from './components/Privacypolicy';
+import TermsConditions from './components/Terms & Conditions';
+import RefundPolicy from './components/Refund&CancellationPolicy';
+import FairPlayPolicy from './components/FairPlayPolicy';
+
 import { PageType } from './types';
 
 const App: React.FC = () => {
@@ -28,40 +35,30 @@ const App: React.FC = () => {
       return false;
     };
 
-    // 2. Disable Keyboard Shortcuts (F12, Ctrl+U, Ctrl+S, Ctrl+C, etc.)
+    // 2. Disable Keyboard Shortcuts
     const handleKeyDown = (e: KeyboardEvent) => {
-      // F12 (DevTools)
-      if (e.key === 'F12') {
-        e.preventDefault();
-        return false;
+      if (e.key === 'F12') { 
+        e.preventDefault(); 
+        return false; 
       }
-
-      // Ctrl+Shift+I (DevTools), Ctrl+Shift+J (Console), Ctrl+Shift+C (Inspect)
-      if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
-        e.preventDefault();
-        return false;
+      if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) { 
+        e.preventDefault(); 
+        return false; 
       }
-
-      // Ctrl+U (View Source)
-      if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) {
-        e.preventDefault();
-        return false;
+      if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) { 
+        e.preventDefault(); 
+        return false; 
       }
-
-      // Ctrl+S (Save Page)
-      if (e.ctrlKey && (e.key === 's' || e.key === 'S')) {
-        e.preventDefault();
-        return false;
+      if (e.ctrlKey && (e.key === 's' || e.key === 'S')) { 
+        e.preventDefault(); 
+        return false; 
       }
-
-      // Ctrl+A (Select All) - optional, but good for content protection
-      if (e.ctrlKey && (e.key === 'a' || e.key === 'A')) {
-        e.preventDefault();
-        return false;
+      if (e.ctrlKey && (e.key === 'a' || e.key === 'A')) { 
+        e.preventDefault(); 
+        return false; 
       }
     };
 
-    // Add Event Listeners
     document.addEventListener('contextmenu', handleContextMenu);
     document.addEventListener('keydown', handleKeyDown);
 
@@ -71,12 +68,11 @@ const App: React.FC = () => {
     };
   }, []);
 
-  return (
-    <div className="min-h-screen bg-gaming-bg text-white selection:bg-gaming-accent selection:text-white font-sans select-none">
-      <Header onNavigate={navigateTo} />
-      
-      <main>
-        {currentPage === 'home' ? (
+  // Clean Routing Logic using Switch Case
+  const renderContent = () => {
+    switch (currentPage) {
+      case 'home':
+        return (
           <>
             <Hero />
             <Stats />
@@ -86,14 +82,40 @@ const App: React.FC = () => {
             <Testimonials />
             <FAQ />
           </>
-        ) : (
-          <LegalPages page={currentPage} />
-        )}
-      </main>
+        );
+      case 'privacy':
+        return <PrivacyPolicy onNavigate={navigateTo} />;
+      case 'terms':
+        return <TermsConditions onNavigate={navigateTo} />;
+      case 'refund':
+        return <RefundPolicy onNavigate={navigateTo} />;
+      case 'fairplay':
+        return <FairPlayPolicy onNavigate={navigateTo} />;
+      default:
+        return <Hero />;
+    }
+  };
 
-      <Footer onNavigate={navigateTo} />
-      <StickyCTA />
-    </div>
+  return (
+    <HelmetProvider>
+      <div className="min-h-screen bg-[#0f1014] text-white selection:bg-blue-500/30 selection:text-blue-200 font-sans select-none">
+        
+        {/* Header with Navigation */}
+        <Header onNavigate={navigateTo} />
+        
+        {/* Dynamic Content Area */}
+        <main className="relative z-10">
+          {renderContent()}
+        </main>
+
+        {/* Footer with Navigation */}
+        <Footer onNavigate={navigateTo} />
+        
+        {/* Sticky CTA (Only visible on Home) */}
+        {currentPage === 'home' && <StickyCTA />}
+        
+      </div>
+    </HelmetProvider>
   );
 };
 
